@@ -15,17 +15,20 @@ class JsonPath {
   /// in the [expression].
   ///
   /// Throws [FormatException] if the [expression] can not be parsed.
-  factory JsonPath(String expression, {Map<String, Predicate> filter}) {
+  JsonPath(this.expression, {Map<String, Predicate> filter = const {}})
+      : _selector = _parse(expression, filter);
+
+  static Selector _parse(String expression, Map<String, Predicate> filter) {
     if (expression.isEmpty) throw FormatException('Empty expression');
     ParsingState state = Ready(RootSelector());
     AST(tokenize(expression)).nodes.forEach((node) {
       state = state.process(node, filter ?? {});
     });
-    return JsonPath._(state.selector);
+    return state.selector;
   }
 
-  JsonPath._(this._selector);
-
+  /// JSONPath expression.
+  final String expression;
   final Selector _selector;
 
   /// Reads the given [json] object returning an Iterable of all matches found.
@@ -36,5 +39,5 @@ class JsonPath {
   dynamic set(dynamic json, dynamic value) => _selector.set(json, (_) => value);
 
   @override
-  String toString() => _selector.expression();
+  String toString() => expression;
 }

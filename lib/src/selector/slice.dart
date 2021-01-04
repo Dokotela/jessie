@@ -28,12 +28,9 @@ class Slice with SelectorMixin implements Selector {
           (r.value is List) ? _filterList(r.value, r.path) : <JsonPathMatch>[])
       .expand((_) => _);
 
-  @override
-  String expression() =>
-      '[${first == 0 ? '' : first}:${last ?? ''}${step != 1 ? ':$step' : ''}]';
 
   @override
-  dynamic set(dynamic json, Replacement replacement) {
+  dynamic set(dynamic json, Replacer replacement) {
     if (json is List) {
       final indices = _indices(json);
       if (indices.isNotEmpty) {

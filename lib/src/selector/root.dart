@@ -7,11 +7,8 @@ class RootSelector with SelectorMixin implements Selector {
 
   @override
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches) =>
-      matches.map((m) => JsonPathMatch(m.value, expression()));
+      matches.map((m) => JsonPathMatch(m.value, r'$'));
 
   @override
-  String expression() => r'$';
-
-  @override
-  dynamic set(dynamic json, Replacement replacement) => replacement(json);
+  dynamic set(dynamic json, Replacer replacement) => replacement(json);
 }

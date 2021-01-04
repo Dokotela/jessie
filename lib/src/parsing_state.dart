@@ -2,9 +2,8 @@ import 'package:json_path/src/ast/node.dart';
 import 'package:json_path/src/predicate.dart';
 import 'package:json_path/src/selector/filter.dart';
 import 'package:json_path/src/selector/list_union.dart';
-import 'package:json_path/src/selector/list_wildcard.dart';
 import 'package:json_path/src/selector/object_union.dart';
-import 'package:json_path/src/selector/object_wildcard.dart';
+import 'package:json_path/src/selector/wildcard.dart';
 import 'package:json_path/src/selector/recursive.dart';
 import 'package:json_path/src/selector/selector.dart';
 import 'package:json_path/src/selector/slice.dart';
@@ -35,7 +34,7 @@ class Ready implements ParsingState {
       case '..':
         return Ready(selector.then(Recursive()));
       case '*':
-        return Ready(selector.then(ObjectWildcard()));
+        return Ready(selector.then(Wildcard()));
       default:
         return Ready(selector.then(ObjectUnion([node.value])));
     }
@@ -43,12 +42,14 @@ class Ready implements ParsingState {
 
   Selector _brackets(List<Node> nodes, Map<String, Predicate> filters) {
     if (nodes.isEmpty) throw FormatException('Empty brackets');
-    if (nodes.length == 1) return _singleValueBrackets(nodes.single);
+    if (nodes.length == 1 && nodes.single.value != ':') {
+      return _singleValueBrackets(nodes.single);
+    }
     return _multiValueBrackets(nodes, filters);
   }
 
   Selector _singleValueBrackets(Node node) {
-    if (node.isWildcard) return ListWildcard();
+    if (node.isWildcard) return Wildcard();
     if (node.isNumber) return ListUnion([node.intValue]);
     if (node.isQuoted) return ObjectUnion([node.unquoted]);
     throw FormatException('Unexpected bracket expression');
@@ -115,7 +116,7 @@ class AwaitingField implements ParsingState {
   @override
   ParsingState process(Node node, Map<String, Predicate> filters) {
     if (node.isWildcard) {
-      return Ready(selector.then(ObjectWildcard()));
+      return Ready(selector.then(Wildcard()));
     }
     return Ready(selector.then(ObjectUnion([node.value])));
   }

@@ -15,10 +15,7 @@ class ObjectUnion with SelectorMixin implements Selector {
       .expand((_) => _);
 
   @override
-  String expression() => '[${_keys.map((k) => Quote(k)).join(',')}]';
-
-  @override
-  dynamic set(dynamic json, Replacement replacement) {
+  dynamic set(dynamic json, Replacer replacement) {
     if (json == null) return _patch(<String, dynamic>{}, replacement);
     if (json is Map) return {...json, ..._patch(json, replacement)};
     return json;
@@ -26,8 +23,8 @@ class ObjectUnion with SelectorMixin implements Selector {
 
   Iterable<JsonPathMatch> _readMap(Map map, String path) => _keys
       .where(map.containsKey)
-      .map((key) => JsonPathMatch(map[key], path + '[${Quote(key)}]'));
+      .map((key) => JsonPathMatch(map[key], path + '[${SingleQuote(key)}]'));
 
-  Map _patch(Map map, Replacement replacement) =>
+  Map _patch(Map map, Replacer replacement) =>
       Map.fromEntries(_keys.map((key) => MapEntry(key, replacement(map[key]))));
 }

@@ -5,14 +5,11 @@ abstract class Selector {
   /// Applies this filter to the [matches]
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches);
 
-  /// The filter expression as string.
-  String expression();
-
   /// Combines this expression with the [other]
   Selector then(Selector other);
 
-  /// Returns a copy of [json] with all selected values modified using [replacement] function.
-  dynamic set(dynamic json, Replacement replacement);
+  /// Returns a copy of [json] with all selected values modified using [replacer] function.
+  dynamic set(dynamic json, Replacer replacer);
 }
 
-typedef Replacement = dynamic Function(dynamic value);
+typedef Replacer = dynamic Function(dynamic value);

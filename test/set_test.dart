@@ -72,6 +72,15 @@ void main() {
       expect(mutated['store']['book'][2]['price'], isA<num>());
       expect(mutated['store']['book'][3]['price'], isA<num>());
     });
+    test('Last element', () {
+      final price = JsonPath(r'$.store.book[-1].price');
+      final mutated = price.set(json, 'hidden');
+      expect(mutated['store']['bicycle']['price'], isA<num>());
+      expect(mutated['store']['book'][0]['price'], isA<num>());
+      expect(mutated['store']['book'][1]['price'], isA<num>());
+      expect(mutated['store']['book'][2]['price'], isA<num>());
+      expect(mutated['store']['book'][3]['price'], 'hidden');
+    });
     test('Union', () {
       final price = JsonPath(r'$.store.book[1,3].price');
       final mutated = price.set(json, 'hidden');
@@ -143,10 +152,6 @@ void main() {
     });
     test('Setting non-existing non-adjacent index throws RangeError', () {
       final title = JsonPath(r'$.store.book[100].title');
-      expect(() => title.set(json, 'Banana'), throwsRangeError);
-    });
-    test('Setting negative index throws RangeError', () {
-      final title = JsonPath(r'$.store.book[-1].title');
       expect(() => title.set(json, 'Banana'), throwsRangeError);
     });
   });

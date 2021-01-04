@@ -15,10 +15,8 @@ class Filter with SelectorMixin implements Selector {
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches) =>
       matches.where((r) => isApplicable(r.value));
 
-  @override
-  String expression() => '[?$name]';
 
   @override
-  dynamic set(dynamic json, Replacement replacement) =>
+  dynamic set(dynamic json, Replacer replacement) =>
       isApplicable(json) ? replacement(json) : json;
 }

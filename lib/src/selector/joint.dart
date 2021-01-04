@@ -1,6 +1,4 @@
 import 'package:json_path/src/json_path_match.dart';
-import 'package:json_path/src/selector/object_wildcard.dart';
-import 'package:json_path/src/selector/recursive.dart';
 import 'package:json_path/src/selector/selector.dart';
 import 'package:json_path/src/selector/selector_mixin.dart';
 
@@ -14,9 +12,6 @@ class Joint with SelectorMixin implements Selector {
   /// Leftmost leaf in the tree
   static Selector leftmost(Selector s) => s is Joint ? leftmost(s.left) : s;
 
-  static String delimiter(Selector left, Selector right) =>
-      (left is! Recursive && right is ObjectWildcard) ? '.' : '';
-
   /// Left subtree
   final Selector left;
 
@@ -28,12 +23,6 @@ class Joint with SelectorMixin implements Selector {
       right.read(left.read(matches));
 
   @override
-  String expression() =>
-      left.expression() +
-      delimiter(rightmost(left), leftmost(right)) +
-      right.expression();
-
-  @override
-  dynamic set(dynamic json, Replacement replacement) =>
+  dynamic set(dynamic json, Replacer replacement) =>
       left.set(json, (_) => right.set(_, replacement));
 }

@@ -98,7 +98,9 @@ Both dot-notation (`$.store.book[0].title`) and bracket-notation (`$['store']['b
 - The bracket-notation supports only single quotes.
 
 ### Wildcards
-Wildcards (`*`) can be used for objects (`$.store.*`) and arrays (`$.store.book[*]`);
+Wildcards (`*`) can be used in two cases:
+- `$.store.*` selects all elements from objects and arrays 
+- `$.store.book[*]` selects all elements from arrays, not affecting objects or scalars;
 
 ### Recursion
 Use `..` to iterate all elements recursively. E.g. `$.store..price` matches all prices in the store.
@@ -108,11 +110,11 @@ Use `[start:end:step]` to filter arrays. Any index can be omitted E.g. `$.store.
 starting from the 4th. Negative `start` and `end` are also supported.
 
 ### Unions
-Array (`book[0,1]`) and object (`book[author,title,price]`) unions are supported. Array unions are always sorted.
+Array (`book[0,1]`) and object (`book[author,title,price]`) unions are supported.
 Object unions support the bracket-notation.
 
 ### Filtering
-Due to the nature of Dart language, filtering expressions like `$..book[?(@.price<10)]` are NOT supported. 
+Due to the nature of Dart, filtering expressions like `$..book[?(@.price<10)]` are NOT supported. 
 Instead, use the callback-kind of filters.
 ```dart
 /// Select all elements with price under 20

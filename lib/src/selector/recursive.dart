@@ -9,10 +9,7 @@ class Recursive with SelectorMixin implements Selector {
       matches.map(_traverse).expand((_) => _);
 
   @override
-  String expression() => '..';
-
-  @override
-  dynamic set(dynamic json, Replacement replacement) {
+  dynamic set(dynamic json, Replacer replacement) {
     if (json is Map) {
       return _replaceInMap(json, replacement);
     }
@@ -32,10 +29,10 @@ class Recursive with SelectorMixin implements Selector {
     return <JsonPathMatch>[];
   }
 
-  dynamic _replaceInMap(Map map, Replacement replacement) => replacement(
+  dynamic _replaceInMap(Map map, Replacer replacement) => replacement(
       map.map((key, value) => MapEntry(key, set(value, replacement))));
 
-  dynamic _replaceInList(List list, Replacement replacement) =>
+  dynamic _replaceInList(List list, Replacer replacement) =>
       replacement(list.map((value) => set(value, replacement)).toList());
 
   Iterable<JsonPathMatch> _values(List val, String path) => val
@@ -44,5 +41,5 @@ class Recursive with SelectorMixin implements Selector {
       .map((e) => JsonPathMatch(e.value, path + '[${e.key}]'));
 
   Iterable<JsonPathMatch> _props(Map map, String path) => map.entries
-      .map((e) => JsonPathMatch(e.value, path + '[${Quote(e.key)}]'));
+      .map((e) => JsonPathMatch(e.value, path + '[${SingleQuote(e.key)}]'));
 }

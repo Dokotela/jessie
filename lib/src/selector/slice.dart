@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class Slice with SelectorMixin implements Selector {
-  Slice({int first, this.last, int step})
+class Slice extends SelectorBase {
+  const Slice({first = 0, this.last, int step = 1})
       : first = first ?? 0,
         step = step ?? 1;
 
@@ -27,7 +27,6 @@ class Slice with SelectorMixin implements Selector {
       .map((r) =>
           (r.value is List) ? _filterList(r.value, r.path) : <JsonPathMatch>[])
       .expand((_) => _);
-
 
   @override
   dynamic set(dynamic json, Replacer replacement) {

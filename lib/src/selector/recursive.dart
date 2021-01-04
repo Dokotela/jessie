@@ -1,9 +1,9 @@
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/quote.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class Recursive with SelectorMixin implements Selector {
+class Recursive extends SelectorBase {
   @override
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches) =>
       matches.map(_traverse).expand((_) => _);

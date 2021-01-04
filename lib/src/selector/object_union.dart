@@ -1,9 +1,9 @@
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/quote.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class ObjectUnion with SelectorMixin implements Selector {
+class ObjectUnion extends SelectorBase {
   ObjectUnion(List<String> keys) : _keys = keys.toSet().toList();
 
   final List<String> _keys;

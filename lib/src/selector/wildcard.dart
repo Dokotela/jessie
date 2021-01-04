@@ -1,9 +1,9 @@
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/quote.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class Wildcard with SelectorMixin implements Selector {
+class Wildcard extends SelectorBase {
   @override
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches) =>
       matches.map((r) {
@@ -12,10 +12,11 @@ class Wildcard with SelectorMixin implements Selector {
         return <JsonPathMatch>[];
       }).expand((_) => _);
 
-  Iterable<JsonPathMatch> _allProperties(Map map, String path) => map.entries
-      .map((e) => JsonPathMatch(e.value, path + '[${SingleQuote(e.key)}]'));
+  static Iterable<JsonPathMatch> _allProperties(Map map, String path) =>
+      map.entries
+          .map((e) => JsonPathMatch(e.value, path + '[${SingleQuote(e.key)}]'));
 
-  Iterable<JsonPathMatch> _allValues(List list, String path) => list
+  static Iterable<JsonPathMatch> _allValues(List list, String path) => list
       .asMap()
       .entries
       .map((e) => JsonPathMatch(e.value, path + '[${e.key}]'));

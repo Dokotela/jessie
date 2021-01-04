@@ -1,8 +1,8 @@
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class ListUnion with SelectorMixin implements Selector {
+class ListUnion extends SelectorBase {
   ListUnion(List<int> keys)
       : _indices = keys.toList(),
         _indicesNormalized = keys.toSet().toList()..sort();

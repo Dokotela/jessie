@@ -6,7 +6,7 @@ abstract class Selector {
   Iterable<JsonPathMatch> read(Iterable<JsonPathMatch> matches);
 
   /// Combines this expression with the [other]
-  Selector then(Selector other);
+  Selector followedBy(Selector other);
 
   /// Returns a copy of [json] with all selected values modified using [replacer] function.
   dynamic set(dynamic json, Replacer replacer);

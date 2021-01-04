@@ -44,6 +44,13 @@ void main() {
       expect(price.read(json).single.value, json['store']['bicycle']['price']);
       expect(price.read(json).single.path, r"$['store']['bicycle']['price']");
     });
+    test('Empty string key', () {
+      final emptySingle = JsonPath("\$['']");
+      final emptyDouble = JsonPath('\$[""]');
+      final data = {'': 42, "''": 123, '""': 222};
+      expect(emptySingle.read(data).single.value, 42);
+      expect(emptyDouble.read(data).single.value, 42);
+    });
   });
 
   group('Invalid format', () {
@@ -206,6 +213,23 @@ void main() {
       expect(union.read(abc).last.value, 'c');
       expect(union.read(abc).last.path, r'$[2]');
     });
+    test('Numerical object key', () {
+      final first = JsonPath(r'$[0]');
+      expect(first.read({'0': 'foo'}), isEmpty);
+    });
+    test('Double index', () {
+      final double = JsonPath(r'$[0,0]');
+      final data = ['a'];
+      expect(double.read(data).length, 2);
+      expect(double.read(data).first.value, 'a');
+      expect(double.read(data).first.path, r'$[0]');
+      expect(double.read(data).last.value, 'a');
+      expect(double.read(data).last.path, r'$[0]');
+    });
+    test('Index on scalar', () {
+      final first = JsonPath(r'$[0]');
+      expect(first.read('foo'), isEmpty);
+    });
     test('Object', () {
       final abc = {
         'a': 'A',
@@ -222,11 +246,30 @@ void main() {
   });
 
   group('Wildcards', () {
-    test('All in root', () {
+    test('All in root .*', () {
       final allInRoot = JsonPath(r'$.*');
       expect(allInRoot.read(json).length, 1);
       expect(allInRoot.read(json).single.value, json['store']);
       expect(allInRoot.read(json).single.path, r"$['store']");
+    });
+    test('All in root [*]', () {
+      final allInRoot = JsonPath(r'$[*]');
+      final data = {
+        'some': 'string',
+        'int': 42,
+        'object': {
+          'key': 'value'
+        },
+        'array': [
+          0,
+          1
+        ]
+      };
+      expect(allInRoot.read(data).length, 4);
+      expect(allInRoot.read(data).first.value, 'string');
+      expect(allInRoot.read(data).first.path, r"$['some']");
+      expect(allInRoot.read(data).last.value, [0, 1]);
+      expect(allInRoot.read(data).last.path, r"$['array']");
     });
     test('All recursive', () {
       final allRecursive = JsonPath(r'$..[*]');

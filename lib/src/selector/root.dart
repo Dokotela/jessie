@@ -1,8 +1,8 @@
 import 'package:json_path/src/json_path_match.dart';
 import 'package:json_path/src/selector/selector.dart';
-import 'package:json_path/src/selector/selector_mixin.dart';
+import 'package:json_path/src/selector/selector_base.dart';
 
-class RootSelector with SelectorMixin implements Selector {
+class RootSelector extends SelectorBase {
   const RootSelector();
 
   @override

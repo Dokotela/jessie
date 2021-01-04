@@ -1,42 +1,58 @@
+import 'package:json_path/src/ast/ast.dart';
 import 'package:json_path/src/ast/node.dart';
+import 'package:json_path/src/ast/tokenize.dart';
 import 'package:json_path/src/predicate.dart';
 import 'package:json_path/src/selector/filter.dart';
 import 'package:json_path/src/selector/list_union.dart';
 import 'package:json_path/src/selector/object_union.dart';
-import 'package:json_path/src/selector/wildcard.dart';
 import 'package:json_path/src/selector/recursive.dart';
+import 'package:json_path/src/selector/root.dart';
 import 'package:json_path/src/selector/selector.dart';
 import 'package:json_path/src/selector/slice.dart';
+import 'package:json_path/src/selector/wildcard.dart';
+
+class Parser {
+  const Parser();
+
+  Selector parse(String expression, Map<String, Predicate> filter) {
+    if (expression.isEmpty) throw FormatException('Empty expression');
+    _State state = _Ready(const RootSelector());
+    AST(tokenize(expression)).nodes.forEach((node) {
+      state = state.process(node, filter ?? {});
+    });
+    return state.selector;
+  }
+}
 
 /// AST parser state
-abstract class ParsingState {
+abstract class _State {
   /// Processes the node. Returns the next state
-  ParsingState process(Node node, Map<String, Predicate> filters);
+  _State process(Node node, Map<String, Predicate> filters);
 
   /// Selector made from the tree
   Selector get selector;
 }
 
 /// Ready to process the next node
-class Ready implements ParsingState {
-  Ready(this.selector);
+class _Ready implements _State {
+  _Ready(this.selector);
 
   @override
   final Selector selector;
 
   @override
-  ParsingState process(Node node, Map<String, Predicate> filters) {
+  _State process(Node node, Map<String, Predicate> filters) {
     switch (node.value) {
       case '[':
-        return Ready(selector.then(_brackets(node.children, filters)));
+        return _Ready(selector.followedBy(_brackets(node.children, filters)));
       case '.':
-        return AwaitingField(selector);
+        return _Awaiting(selector);
       case '..':
-        return Ready(selector.then(Recursive()));
+        return _Ready(selector.followedBy(Recursive()));
       case '*':
-        return Ready(selector.then(Wildcard()));
+        return _Ready(selector.followedBy(Wildcard()));
       default:
-        return Ready(selector.then(ObjectUnion([node.value])));
+        return _Ready(selector.followedBy(ObjectUnion([node.value])));
     }
   }
 
@@ -107,17 +123,17 @@ class Ready implements ParsingState {
   }
 }
 
-class AwaitingField implements ParsingState {
-  AwaitingField(this.selector);
+class _Awaiting implements _State {
+  _Awaiting(this.selector);
 
   @override
   final Selector selector;
 
   @override
-  ParsingState process(Node node, Map<String, Predicate> filters) {
+  _State process(Node node, Map<String, Predicate> filters) {
     if (node.isWildcard) {
-      return Ready(selector.then(Wildcard()));
+      return _Ready(selector.followedBy(Wildcard()));
     }
-    return Ready(selector.then(ObjectUnion([node.value])));
+    return _Ready(selector.followedBy(ObjectUnion([node.value])));
   }
 }

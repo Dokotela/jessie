@@ -42,7 +42,7 @@ void main() {
 }  
   ''');
 
-  final prices = JsonPath(r'$..price');
+  final prices = JsonPath(r'$.store.book');
 
   print('All prices in the store:');
 

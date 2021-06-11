@@ -13,7 +13,9 @@ class Field implements Selector {
     if (value is Map && value.containsKey(name)) {
       yield ChildMatch.child(name, match);
     } else if (value is List) {
-      yield ChildMatch.childList(name, match);
+      for (var i = 0; i < value.length; i++) {
+        yield ChildMatch.child(name, ChildMatch.index(i, match));
+      }
     }
   }
 }

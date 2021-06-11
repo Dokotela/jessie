@@ -18,12 +18,6 @@ class ChildMatch implements FhirPathMatch {
         path = parent.path + '[' + quote(key) + ']',
         pointer = JsonPointerSegment(key, parent.pointer);
 
-  /// Child match for an object child
-  ChildMatch.childList(String key, this.parent)
-      : value = parent.value.map((v) => v[key]).toList(),
-        path = parent.path + '[' + quote(key) + ']',
-        pointer = JsonPointerSegment(key, parent.pointer);
-
   /// The value
   @override
   final value;
